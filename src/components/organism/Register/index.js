@@ -25,12 +25,12 @@ const Register = () => {
         placeholder="Masukkan password"
       />
       <Button size={"w-full"} textButton="Register"></Button>
-      <p className="text-sm text-center mt-2">
+      {/* <p className="text-sm text-center mt-2">
         {`Already have an account? `}
         <Link href="/login" className="text-blue-500 hover:text-blue-700">
           Login
         </Link>
-      </p>
+      </p> */}
     </form>
   );
 };

@@ -6,7 +6,11 @@ const RegisterPage = () => {
   return (
     <>
       <div className="flex justify-center items-center min-h-screen">
-        <AuthLayout title={"Register"} desc={"Register a new account"}>
+        <AuthLayout
+          title={"Register"}
+          desc={"Register a new account"}
+          type="register"
+        >
           <Register />
         </AuthLayout>
       </div>
