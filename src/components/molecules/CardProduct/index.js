@@ -12,29 +12,32 @@ export default function CardProduct({ children }) {
 }
 
 function Header({ image }) {
-    return <img src={image} alt={image} className="rounded-t-lg" />
+  return <img src={image} alt={image} className="rounded-t-lg" />;
 }
 
 function Body({ title, desc }) {
-    return (
-        <div className="px-5 pb-5">
-            <h3 className="text-3xl font-bold text-slate-900">{title}</h3>
-            <p className="mt-3 text-slate-700 text-base text-justify">{desc}</p>
-        </div>
-    )
+  return (
+    <div className="px-5 pb-5">
+      <h3 className="text-3xl font-bold text-slate-900">{title}</h3>
+      <p className="mt-3 text-slate-700 text-base text-justify">{desc}</p>
+    </div>
+  );
 }
 
-function Footer({price}) {
-    return (
-        <div className="flex flex-col items-center justify-center px-5 pb-5">
-            <span className="text-2xl font-semibold mb-2">Harga Rp. {price}</span>
-            <Button size={"W-full"} color="bg-blue-500">
-                Buy
-            </Button>
-        </div>
-    )
+function Footer({ price, onClick }) {
+  return (
+    <div className="flex flex-col items-center justify-center px-5 pb-5">
+      <span className="text-2xl font-semibold mb-2">Harga {price}</span>
+      <Button
+        size={"W-full"}
+        color="bg-blue-500"
+        textButton="Buy"
+        onClick={onClick}
+      />
+    </div>
+  );
 }
 
-CardProduct.Header = Header
-CardProduct.Body = Body
-CardProduct.Footer = Footer
+CardProduct.Header = Header;
+CardProduct.Body = Body;
+CardProduct.Footer = Footer;
