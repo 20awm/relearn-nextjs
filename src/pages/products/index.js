@@ -1,6 +1,6 @@
 import Button from "@/components/atoms/Button";
 import CardProduct from "@/components/molecules/CardProduct";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 const data = [
   {
@@ -63,13 +63,20 @@ function ProductsPage() {
     }
   };
 
+  const cartTotal = useMemo(() => {
+    return cart.reduce((total, item) => {
+      const product = data.find((product) => product.id === item.id);
+      return total + product.price * item.qty;
+    }, 0);
+  }, [cart]);
+
   useEffect(() => {
     if (cart.length > 0) {
-      const sum = cart.reduce((total, item) => {
-        const product = data.find((product) => product.id === item.id);
-        return total + product.price * item.qty;
-      }, 0);
-      setTotal(sum);
+      // const sum = cart.reduce((total, item) => {
+      //   const product = data.find((product) => product.id === item.id);
+      //   return total + product.price * item.qty;
+      // }, 0);
+      // setTotal(sum);
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   }, [cart]);
@@ -146,7 +153,7 @@ function ProductsPage() {
             <div className="flex justify-between px-4 py-2 border mt-2">
               <span className="font-semibold">Total</span>
               <span className="font-semibold">
-                {total.toLocaleString("id-ID", {
+                {cartTotal.toLocaleString("id-ID", {
                   style: "currency",
                   currency: "IDR",
                 })}
