@@ -1,6 +1,12 @@
 import Button from "@/components/atoms/Button";
 import CardProduct from "@/components/molecules/CardProduct";
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 
 const data = [
   {
@@ -32,9 +38,15 @@ const data = [
 function ProductsPage() {
   const [username, setUsername] = useState("");
   const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
   const searchInputRef = useRef(null);
+
+  const searchProduct = useMemo(() => {
+    return data.filter((product) =>
+      product.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
 
   useEffect(() => {
     const getUsername = localStorage.getItem("username");
@@ -42,26 +54,30 @@ function ProductsPage() {
       setUsername(getUsername);
     }
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
-    searchInputRef.current.focus();
+    // searchInputRef.current.focus();
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("password");
+    localStorage.removeItem("cart");
     window.location.href = "/login";
   };
 
-  const handleAddToCart = (id) => {
-    if (cart.find((item) => item.id === id)) {
-      setCart(
-        cart.map((item) =>
-          item.id === id ? { ...item, qty: item.qty + 1 } : item
-        )
-      );
-    } else {
-      setCart([...cart, { id, qty: 1 }]);
-    }
-  };
+  const handleAddToCart = useCallback(
+    (id) => {
+      if (cart.find((item) => item.id === id)) {
+        setCart(
+          cart.map((item) =>
+            item.id === id ? { ...item, qty: item.qty + 1 } : item
+          )
+        );
+      } else {
+        setCart([...cart, { id, qty: 1 }]);
+      }
+    },
+    [cart]
+  );
 
   const cartTotal = useMemo(() => {
     return cart.reduce((total, item) => {
@@ -72,38 +88,55 @@ function ProductsPage() {
 
   useEffect(() => {
     if (cart.length > 0) {
-      // const sum = cart.reduce((total, item) => {
-      //   const product = data.find((product) => product.id === item.id);
-      //   return total + product.price * item.qty;
-      // }, 0);
-      // setTotal(sum);
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   }, [cart]);
-
-  const filteredProducts = data.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <>
       <div className="flex justify-between items-center bg-blue-500 px-5 py-4">
         <h1 className="text-xl">Welcome, {username}</h1>
+        <div className="w-[380px]">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="py-2 px-4 rounded-full w-[300px]"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              if (e.target.value !== "") {
+                setShowSearch(true);
+              } else {
+                setShowSearch(false);
+              }
+            }}
+          />
+          {showSearch && searchProduct.length > 0 && (
+            <ul className="absolute bg-white text-black w-[300px] mt-1 py-2 px-3 rounded-lg">
+              {searchProduct.map((product) => (
+                <li key={product.id} className="my-1">
+                  {product.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <Button color="bg-red-500" textButton="Logout" onClick={handleLogout} />
       </div>
+
       <div className="flex px-5 py-4">
         <div className="flex flex-col w-2/3">
           <h1 className="text-3xl font-bold mb-2 uppercase">Products</h1>
-          <input
+          {/* <input
             ref={searchInputRef}
             type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for a product"
             className="mb-4 p-2 border border-gray-300"
-          />
+          /> */}
           <div className="flex flex-wrap gap-4">
-            {filteredProducts.map((item) => (
+            {searchProduct.map((item) => (
               <CardProduct key={item.id}>
                 <CardProduct.Header image={item.image} />
                 <CardProduct.Body title={item.name} desc={item.desc} />
