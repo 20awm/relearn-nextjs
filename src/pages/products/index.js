@@ -15,12 +15,15 @@ function ProductsPage() {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const searchInputRef = useRef(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       const data = await getProducts();
       setProducts(data);
+      setLoading(false);
     };
 
     fetchProducts();
@@ -120,18 +123,27 @@ function ProductsPage() {
       <div className="flex px-5 py-4">
         <div className="flex flex-col w-2/3">
           <h1 className="text-3xl font-bold mb-2 uppercase">Products</h1>
-          <div className="flex flex-wrap gap-4">
-            {searchProduct.map((item) => (
-              <CardProduct key={item.id}>
-                <CardProduct.Header image={item.image} />
-                <CardProduct.Body title={item.title} desc={item.description} />
-                <CardProduct.Footer
-                  price={item.price}
-                  onClick={() => handleAddToCart(item.id)}
-                />
-              </CardProduct>
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <span className="text-xl font-semibold">Loading...</span>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-4">
+              {searchProduct.map((item) => (
+                <CardProduct key={item.id}>
+                  <CardProduct.Header image={item.image} />
+                  <CardProduct.Body
+                    title={item.title}
+                    desc={item.description}
+                  />
+                  <CardProduct.Footer
+                    price={item.price}
+                    onClick={() => handleAddToCart(item.id)}
+                  />
+                </CardProduct>
+              ))}
+            </div>
+          )}
         </div>
         {cart.length > 0 && (
           <div className="cart w-1/3">
