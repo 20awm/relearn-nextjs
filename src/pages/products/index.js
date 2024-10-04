@@ -135,7 +135,7 @@ function ProductsPage() {
         </div>
         {cart.length > 0 && (
           <div className="cart w-1/3">
-            <h1 className="text-xl font-bold mb-2 uppercase">Cart</h1>
+            <h1 className="text-3xl font-bold mb-2 uppercase">Cart</h1>
             <div className="flex flex-col gap-2">
               {cart.map((item) => {
                 const product = products.find(
