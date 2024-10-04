@@ -11,31 +11,20 @@ import { getProducts } from "@/services/products";
 import useLogin from "@/hooks/useLogin";
 import formatCurrency from "@/helpers/utils/formatCurrency";
 
-function ProductsPage() {
+function ProductsPage({ products }) {
   const username = useLogin();
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const searchInputRef = useRef(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      const data = await getProducts();
-      setProducts(data);
-      setLoading(false);
-    };
-
-    fetchProducts();
-
     const savedCart = JSON.parse(localStorage.getItem("cart"));
     if (savedCart) {
       setCart(savedCart);
     }
-
-    // searchInputRef.current.focus();
   }, []);
 
   const searchProduct = useMemo(() => {
@@ -188,6 +177,20 @@ function ProductsPage() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  try {
+    const products = await getProducts();
+    const slicedProducts = products.slice(0, 8);
+    return {
+      props: {
+        products: slicedProducts || [],
+      },
+    };
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export default ProductsPage;
