@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import { getProducts } from "@/services/products";
+import { getUsername } from "@/services/auth";
 
 function ProductsPage() {
   const [username, setUsername] = useState("");
@@ -28,17 +29,22 @@ function ProductsPage() {
 
     fetchProducts();
 
-    const getUsername = localStorage.getItem("username");
-    if (getUsername) {
-      setUsername(getUsername);
-    }
-
     const savedCart = JSON.parse(localStorage.getItem("cart"));
     if (savedCart) {
       setCart(savedCart);
     }
 
     // searchInputRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const username = getUsername(token);
+      setUsername(username);
+    } else {
+      window.location.href = "/login";
+    }
   }, []);
 
   const searchProduct = useMemo(() => {
@@ -48,8 +54,7 @@ function ProductsPage() {
   }, [search, products]);
 
   const handleLogout = () => {
-    localStorage.removeItem("username");
-    localStorage.removeItem("password");
+    localStorage.removeItem("token");
     localStorage.removeItem("cart");
     window.location.href = "/login";
   };

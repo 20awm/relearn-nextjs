@@ -1,19 +1,32 @@
+import React from "react";
 import Button from "@/components/atoms/Button";
 import InputForm from "@/components/molecules/InputFrom";
 // import Link from "next/link";
-import React from "react";
+import { login } from "@/services/auth";
 
 const Login = () => {
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
     // console.log("Login");
-    console.log(event.target.username.value);
-    console.log(event.target.password.value);
-    localStorage.setItem("username", event.target.username.value);
-    localStorage.setItem("password", event.target.password.value);
-    window.location.href = "/products";
+    const payload = {
+      username: event.target.username.value,
+      password: event.target.password.value,
+    };
+    try {
+      const response = await login(payload);
+      console.log(response);
+
+      if (response.status) {
+        localStorage.setItem("token", response.token);
+        window.location.href = "/products";
+      } else {
+        console.log("Login failed", response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
-  
+
   return (
     <form onSubmit={handleLogin} className="flex flex-col gap-4">
       <InputForm
