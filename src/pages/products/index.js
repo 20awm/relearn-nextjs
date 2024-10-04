@@ -9,33 +9,6 @@ import React, {
 } from "react";
 import { getProducts } from "@/services/products";
 
-// const data = [
-//   {
-//     id: 1,
-//     image: "images/odeng.jpg",
-//     name: "Odeng 1",
-//     desc:
-//       "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
-//     price: 25000,
-//   },
-//   {
-//     id: 2,
-//     image: "images/odeng.jpg",
-//     name: "Odeng 2",
-//     desc:
-//       "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
-//     price: 25000,
-//   },
-//   {
-//     id: 3,
-//     image: "images/odeng.jpg",
-//     name: "Odeng 3",
-//     desc:
-//       "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
-//     price: 25000,
-//   },
-// ];
-
 function ProductsPage() {
   const [username, setUsername] = useState("");
   const [cart, setCart] = useState([]);
@@ -162,7 +135,7 @@ function ProductsPage() {
         </div>
         {cart.length > 0 && (
           <div className="cart w-1/3">
-            <h1 className="text-3xl font-bold mb-2 uppercase">Cart</h1>
+            <h1 className="text-xl font-bold mb-2 uppercase">Cart</h1>
             <div className="flex flex-col gap-2">
               {cart.map((item) => {
                 const product = products.find(

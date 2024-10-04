@@ -24,7 +24,7 @@ function Header({ image }) {
 function Body({ title, desc }) {
   return (
     <div className="px-5 pb-5 flex-grow">
-      <h3 className="text-2xl font-bold text-slate-900">{title}</h3>
+      <h3 className="text-xl font-bold text-slate-900">{title}</h3>
       <p className="text-sm mt-3 text-slate-700 text-base text-justify">
         {desc}
       </p>
