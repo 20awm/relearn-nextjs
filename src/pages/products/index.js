@@ -179,21 +179,7 @@ function ProductsPage({ products }) {
   );
 }
 
-export async function getServerSideProps() {
-  // Method 1
-  // try {
-  //   const products = await getProducts();
-  //   const slicedProducts = products.slice(0, 8);
-  //   return {
-  //     props: {
-  //       products: slicedProducts || [],
-  //     },
-  //   };
-  // } catch (error) {
-  //   console.log(error);
-  // }
-
-  // Method 2
+export async function getStaticProps() {
   try {
     const [productResults] = await Promise.all([getProducts()]);
     const slicedProducts = productResults.slice(0, 8);
