@@ -8,10 +8,11 @@ import React, {
   useCallback,
 } from "react";
 import { getProducts } from "@/services/products";
-import { getUsername } from "@/services/auth";
+import useLogin from "@/hooks/useLogin";
+import formatCurrency from "@/helpers/utils/formatCurrency";
 
 function ProductsPage() {
-  const [username, setUsername] = useState("");
+  const username = useLogin();
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
@@ -35,16 +36,6 @@ function ProductsPage() {
     }
 
     // searchInputRef.current.focus();
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const username = getUsername(token);
-      setUsername(username);
-    } else {
-      window.location.href = "/login";
-    }
   }, []);
 
   const searchProduct = useMemo(() => {
@@ -174,10 +165,7 @@ function ProductsPage() {
                           {product.title}
                         </span>
                         <span className="font-semibold">
-                          {(product.price * item.qty).toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                          })}
+                          {formatCurrency(product.price * item.qty)}
                         </span>
                       </div>
                       <div className="flex flex-col justify-center items-center">
@@ -193,12 +181,7 @@ function ProductsPage() {
             </div>
             <div className="flex justify-between px-4 py-2 border mt-2">
               <span className="font-semibold">Total</span>
-              <span className="font-semibold">
-                {cartTotal.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </span>
+              <span className="font-semibold">{formatCurrency(cartTotal)}</span>
             </div>
           </div>
         )}
