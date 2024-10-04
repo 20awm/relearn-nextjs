@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   // basePath: "/home",
+  // images: {
+  //   remotePatterns: [{
+
+  //   }]
+  // }
 };
 
 export default nextConfig;

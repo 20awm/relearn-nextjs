@@ -7,55 +7,69 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
+import { getProducts } from "@/services/products";
 
-const data = [
-  {
-    id: 1,
-    image: "images/odeng.jpg",
-    name: "Odeng 1",
-    desc:
-      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
-    price: 25000,
-  },
-  {
-    id: 2,
-    image: "images/odeng.jpg",
-    name: "Odeng 2",
-    desc:
-      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
-    price: 25000,
-  },
-  {
-    id: 3,
-    image: "images/odeng.jpg",
-    name: "Odeng 3",
-    desc:
-      "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
-    price: 25000,
-  },
-];
+// const data = [
+//   {
+//     id: 1,
+//     image: "images/odeng.jpg",
+//     name: "Odeng 1",
+//     desc:
+//       "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
+//     price: 25000,
+//   },
+//   {
+//     id: 2,
+//     image: "images/odeng.jpg",
+//     name: "Odeng 2",
+//     desc:
+//       "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
+//     price: 25000,
+//   },
+//   {
+//     id: 3,
+//     image: "images/odeng.jpg",
+//     name: "Odeng 3",
+//     desc:
+//       "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor officia quia non cupiditate commodi maxime architecto tempora hic iste sapiente?",
+//     price: 25000,
+//   },
+// ];
 
 function ProductsPage() {
   const [username, setUsername] = useState("");
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [products, setProducts] = useState([]);
   const searchInputRef = useRef(null);
 
-  const searchProduct = useMemo(() => {
-    return data.filter((product) =>
-      product.name.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search]);
-
   useEffect(() => {
+    const fetchProducts = async () => {
+      const data = await getProducts();
+      setProducts(data);
+    };
+
+    fetchProducts();
+
     const getUsername = localStorage.getItem("username");
     if (getUsername) {
       setUsername(getUsername);
     }
-    setCart(JSON.parse(localStorage.getItem("cart")) || []);
+
+    const savedCart = JSON.parse(localStorage.getItem("cart"));
+    if (savedCart) {
+      setCart(savedCart);
+    }
+
     // searchInputRef.current.focus();
   }, []);
+
+  const searchProduct = useMemo(() => {
+    return products.filter((product) =>
+      product.title.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, products]);
 
   const handleLogout = () => {
     localStorage.removeItem("username");
@@ -81,14 +95,20 @@ function ProductsPage() {
 
   const cartTotal = useMemo(() => {
     return cart.reduce((total, item) => {
-      const product = data.find((product) => product.id === item.id);
-      return total + product.price * item.qty;
+      const product = products.find((product) => product.id === item.id);
+      if (product) {
+        return total + product.price * item.qty;
+      }
+      return total;
     }, 0);
-  }, [cart]);
+  }, [cart, products]);
 
   useEffect(() => {
+    // console.log("Saving cart to localStorage:", cart);
     if (cart.length > 0) {
       localStorage.setItem("cart", JSON.stringify(cart));
+    } else {
+      localStorage.removeItem("cart");
     }
   }, [cart]);
 
@@ -115,7 +135,7 @@ function ProductsPage() {
             <ul className="absolute bg-white text-black w-[300px] mt-1 py-2 px-3 rounded-lg">
               {searchProduct.map((product) => (
                 <li key={product.id} className="my-1">
-                  {product.name}
+                  {product.title}
                 </li>
               ))}
             </ul>
@@ -127,19 +147,11 @@ function ProductsPage() {
       <div className="flex px-5 py-4">
         <div className="flex flex-col w-2/3">
           <h1 className="text-3xl font-bold mb-2 uppercase">Products</h1>
-          {/* <input
-            ref={searchInputRef}
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search for a product"
-            className="mb-4 p-2 border border-gray-300"
-          /> */}
           <div className="flex flex-wrap gap-4">
             {searchProduct.map((item) => (
               <CardProduct key={item.id}>
                 <CardProduct.Header image={item.image} />
-                <CardProduct.Body title={item.name} desc={item.desc} />
+                <CardProduct.Body title={item.title} desc={item.description} />
                 <CardProduct.Footer
                   price={item.price}
                   onClick={() => handleAddToCart(item.id)}
@@ -148,27 +160,33 @@ function ProductsPage() {
             ))}
           </div>
         </div>
-        {/* cart */}
         {cart.length > 0 && (
           <div className="cart w-1/3">
             <h1 className="text-3xl font-bold mb-2 uppercase">Cart</h1>
             <div className="flex flex-col gap-2">
               {cart.map((item) => {
-                const datas = data.find((data) => data.id === item.id);
+                const product = products.find(
+                  (product) => product.id === item.id
+                );
+                if (!product) {
+                  return null; // Skip rendering if product is not found
+                }
                 return (
                   <div key={item.id} className="flex p-4 border rounded-lg">
                     <img
-                      src={datas.image}
+                      src={product.image}
                       alt="cart item"
                       className="max-w-[100px]"
                     />
                     <div className="flex justify-between w-full">
                       <div className="flex flex-col justify-between ml-3">
-                        <span className="font-bold text-xl">{datas.name}</span>
+                        <span className="font-bold text-xl">
+                          {product.title}
+                        </span>
                         <span className="font-semibold">
-                          {(datas.price * item.qty).toLocaleString("id-ID", {
+                          {(product.price * item.qty).toLocaleString("en-US", {
                             style: "currency",
-                            currency: "IDR",
+                            currency: "USD",
                           })}
                         </span>
                       </div>
@@ -186,9 +204,9 @@ function ProductsPage() {
             <div className="flex justify-between px-4 py-2 border mt-2">
               <span className="font-semibold">Total</span>
               <span className="font-semibold">
-                {cartTotal.toLocaleString("id-ID", {
+                {cartTotal.toLocaleString("en-US", {
                   style: "currency",
-                  currency: "IDR",
+                  currency: "USD",
                 })}
               </span>
             </div>
