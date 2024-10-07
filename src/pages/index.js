@@ -1,14 +1,12 @@
 import Button from "@/components/atoms/Button";
 import Card from "@/components/molecules/CardWithChildren";
-import { useSelector } from "react-redux";
+import { isMobileScreenAtom } from "@/jotai/atoms";
+import { useAtom } from "jotai";
+
 export default function Home() {
-  const {
-    isMobileScreen,
-    // isLargeScreen
-  } = useSelector((state) => state.screen);
-  // const isLargeScreen = useSelector((state) => state.screen.isLargeScreen);
-  console.log("isMobileScreen", isMobileScreen);
-  // console.log("isLargeScreen", isLargeScreen);
+  const [isMobileScreen] = useAtom(isMobileScreenAtom);
+  console.log("isMobileScreen (jotai): ", isMobileScreen);
+
   return (
     <div class="p-4 font-poppins flex justify-center items-center min-h-screen">
       <h1 class>Welcome to Nextjs</h1>
