@@ -10,15 +10,15 @@ import React, {
 import { getProducts } from "@/services/products";
 import useLogin from "@/hooks/useLogin";
 import formatCurrency from "@/helpers/utils/formatCurrency";
+import Modal from "@/components/atoms/Modal";
 
 function ProductsPage({ products }) {
   const username = useLogin();
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-  // const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const searchInputRef = useRef(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart"));
@@ -32,6 +32,10 @@ function ProductsPage({ products }) {
       product.title.toLowerCase().includes(search.toLowerCase())
     );
   }, [search, products]);
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -102,7 +106,16 @@ function ProductsPage({ products }) {
             </ul>
           )}
         </div>
-        <Button color="bg-red-500" textButton="Logout" onClick={handleLogout} />
+        <Button
+          color="bg-red-500"
+          textButton="Logout"
+          onClick={() => {
+            setShowModal(true);
+          }}
+        />
+        {showModal && (
+          <Modal handleClose={handleClose} handleLogout={handleLogout} />
+        )}
       </div>
 
       <div className="flex px-5 py-4">
