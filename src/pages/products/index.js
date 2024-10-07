@@ -187,6 +187,7 @@ export async function getStaticProps() {
       props: {
         products: slicedProducts || [],
       },
+      revalidate: 60,
     };
   } catch (error) {
     console.log(error);
