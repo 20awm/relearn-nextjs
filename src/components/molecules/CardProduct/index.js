@@ -21,10 +21,15 @@ function Header({ image }) {
   );
 }
 
-function Body({ title, desc }) {
+function Body({ title, desc, onClick }) {
   return (
     <div className="px-5 pb-5 flex-grow">
-      <h3 className="text-xl font-bold text-slate-900">{title}</h3>
+      <h3
+        className="text-xl font-bold text-slate-900 cursor-pointer"
+        onClick={onClick}
+      >
+        {title}
+      </h3>
       <p className="text-sm mt-3 text-slate-700 text-base text-justify">
         {desc}
       </p>

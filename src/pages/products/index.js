@@ -1,12 +1,7 @@
+import { useRouter } from "next/router";
 import Button from "@/components/atoms/Button";
 import CardProduct from "@/components/molecules/CardProduct";
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { getProducts } from "@/services/products";
 import useLogin from "@/hooks/useLogin";
 import formatCurrency from "@/helpers/utils/formatCurrency";
@@ -17,8 +12,8 @@ function ProductsPage({ products }) {
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart"));
@@ -58,6 +53,10 @@ function ProductsPage({ products }) {
     [cart]
   );
 
+  const handleProductClick = (id) => {
+    router.push(`/products/${id}`);
+  };
+
   const cartTotal = useMemo(() => {
     return cart.reduce((total, item) => {
       const product = products.find((product) => product.id === item.id);
@@ -69,7 +68,6 @@ function ProductsPage({ products }) {
   }, [cart, products]);
 
   useEffect(() => {
-    // console.log("Saving cart to localStorage:", cart);
     if (cart.length > 0) {
       localStorage.setItem("cart", JSON.stringify(cart));
     } else {
@@ -121,27 +119,23 @@ function ProductsPage({ products }) {
       <div className="flex px-5 py-4">
         <div className="flex flex-col w-2/3">
           <h1 className="text-3xl font-bold mb-2 uppercase">Products</h1>
-          {loading ? (
-            <div className="flex justify-center items-center h-full">
-              <span className="text-xl font-semibold">Loading...</span>
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-4">
-              {searchProduct.map((item) => (
-                <CardProduct key={item.id}>
-                  <CardProduct.Header image={item.image} />
-                  <CardProduct.Body
-                    title={item.title}
-                    desc={item.description}
-                  />
-                  <CardProduct.Footer
-                    price={item.price}
-                    onClick={() => handleAddToCart(item.id)}
-                  />
-                </CardProduct>
-              ))}
-            </div>
-          )}
+
+          <div className="flex flex-wrap gap-4">
+            {searchProduct.map((item) => (
+              <CardProduct key={item.id}>
+                <CardProduct.Header image={item.image} />
+                <CardProduct.Body
+                  title={item.title}
+                  desc={item.description}
+                  onClick={() => handleProductClick(item.id)}
+                />
+                <CardProduct.Footer
+                  price={item.price}
+                  onClick={() => handleAddToCart(item.id)}
+                />
+              </CardProduct>
+            ))}
+          </div>
         </div>
         {cart.length > 0 && (
           <div className="cart w-1/3">
@@ -194,7 +188,7 @@ function ProductsPage({ products }) {
 
 export async function getStaticProps() {
   try {
-    const [productResults] = await Promise.all([getProducts()]);
+    const productResults = await getProducts();
     const slicedProducts = productResults.slice(0, 8);
     return {
       props: {

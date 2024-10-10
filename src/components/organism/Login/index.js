@@ -3,11 +3,13 @@ import Button from "@/components/atoms/Button";
 import InputForm from "@/components/molecules/InputFrom";
 // import Link from "next/link";
 import { login } from "@/services/auth";
+import { useRouter } from "next/router";
 
 const Login = () => {
+  const router = useRouter();
+
   const handleLogin = async (event) => {
     event.preventDefault();
-    // console.log("Login");
     const payload = {
       username: event.target.username.value,
       password: event.target.password.value,
@@ -18,7 +20,7 @@ const Login = () => {
 
       if (response.status) {
         localStorage.setItem("token", response.token);
-        window.location.href = "/products";
+        router.push("/products");
       } else {
         console.log("Login failed", response);
       }
